@@ -46,6 +46,15 @@
         "tsConfigPath": "apps/notifications-service/tsconfig.app.json"
       }
     },
+    "payment-service": {
+      "type": "application",
+      "root": "apps/payment-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/payment-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/payment-service/tsconfig.app.json"
+      }
+    },
     "users-service": {
       "type": "application",
       "root": "apps/users-service",

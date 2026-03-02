@@ -1,14 +1,28 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { BookingsServiceService } from './bookings-service.service';
+import {
+  BookingsServiceControllerMethods,
+  CreateBookingRequest,
+  GetBookingByIdRequest,
+  UpdateBookingStatusRequest,
+} from 'libs/generated/bookings';
 
+@BookingsServiceControllerMethods()
 @Controller()
 export class BookingsServiceController {
   constructor(
     private readonly bookingsServiceService: BookingsServiceService,
   ) {}
 
-  @Get()
-  getHello(): string {
-    return this.bookingsServiceService.getHello();
+  createBooking(request: CreateBookingRequest) {
+    return this.bookingsServiceService.createBooking(request);
+  }
+
+  getBookingById(request: GetBookingByIdRequest) {
+    return this.bookingsServiceService.getBookingById(request.id);
+  }
+
+  updateBookingStatus(request: UpdateBookingStatusRequest) {
+    return this.bookingsServiceService.updateBookingStatus(request);
   }
 }

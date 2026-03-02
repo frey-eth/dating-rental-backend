@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { USER_MOCKUP } from '../../../shared/constants';
+import { USER_MOCKUP } from '../../../libs/common/constants';
 import { RpcException } from '@nestjs/microservices';
 import { CreateUserRequest, User } from 'libs/generated/users';
 
