@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/yobae-backend/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/yobae-backend/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/yobae-backend",
+  "projects": {
+    "api-gateway": {
+      "type": "application",
+      "root": "apps/api-gateway",
+      "entryFile": "main",
+      "sourceRoot": "apps/api-gateway/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/api-gateway/tsconfig.app.json"
+      }
+    },
+    "auth-service": {
+      "type": "application",
+      "root": "apps/auth-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/auth-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/auth-service/tsconfig.app.json"
+      }
+    },
+    "bookings-service": {
+      "type": "application",
+      "root": "apps/bookings-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/bookings-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/bookings-service/tsconfig.app.json"
+      }
+    },
+    "notifications-service": {
+      "type": "application",
+      "root": "apps/notifications-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/notifications-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/notifications-service/tsconfig.app.json"
+      }
+    },
+    "users-service": {
+      "type": "application",
+      "root": "apps/users-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/users-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/users-service/tsconfig.app.json"
+      }
+    }
+  }
+}
