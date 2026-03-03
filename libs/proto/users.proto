@@ -7,14 +7,17 @@ service UsersService {
   rpc GetUserById(GetUserByIdRequest) returns (User);
   rpc GetUserByEmail(GetUserByEmailRequest) returns (User);
   rpc CreateUser(CreateUserRequest) returns (User);
-  rpc UpdateUser(UpdateUserRequest) returns (User);
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
 }
 
 message User {
-  int32 id = 1;
+  string id = 1;
   string name = 2;
   string email = 3;
   string password = 4;
+  string role = 5;
+  string createdAt = 6;
+  string updatedAt = 7;
 }
 
 message GetUsersRequest {
@@ -22,10 +25,12 @@ message GetUsersRequest {
 
 message GetUsersResponse {
   repeated User users = 1;
+  string status = 2;
+  string message = 3;
 }
 
 message GetUserByIdRequest {
-  int32 id = 1;
+  string id = 1;
 }
 
 message GetUserByEmailRequest {
@@ -33,8 +38,14 @@ message GetUserByEmailRequest {
 }
 
 message UpdateUserRequest {
-  int32 id = 1;
+  string id = 1;
   User user = 2;
+}
+
+message UpdateUserResponse {
+  User user = 1;
+  string status = 2;
+  string message = 3;
 }
 
 message CreateUserRequest {

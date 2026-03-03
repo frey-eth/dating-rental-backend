@@ -1,52 +1,111 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { USER_MOCKUP } from '../../../libs/common/constants';
 import { RpcException } from '@nestjs/microservices';
-import { CreateUserRequest, User } from 'libs/generated/users';
+import type {
+  CreateUserRequest,
+  UpdateUserRequest,
+  User as ProtoUser,
+  GetUsersResponse,
+  UpdateUserResponse,
+} from 'libs/generated/users';
+import { PrismaService } from './prisma.service';
+import { toProtoUser } from './user.mapper';
 
 @Injectable()
 export class UsersServiceService {
-  private readonly users = USER_MOCKUP;
   private readonly logger = new Logger(UsersServiceService.name);
-  getHello(): string {
-    return 'Hello World!';
-  }
 
-  getUsers() {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async getUsers(): Promise<GetUsersResponse> {
+    const users = await this.prisma.user.findMany();
     return {
-      users: this.users,
+      users: users.map(toProtoUser),
+      status: 'success',
+      message: 'Users fetched successfully',
     };
   }
 
-  getUserById(id: number) {
-    return this.users.find((user) => user.id === id);
-  }
-
-  getUserByEmail(email: string) {
-    const user = this.users.find((user) => user.email === email);
-    if (user) {
-      return user;
+  async getUserById(id: string): Promise<ProtoUser> {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new RpcException({ code: 5, message: 'User not found' });
     }
-    throw new RpcException('User not found');
+    return toProtoUser(user);
   }
 
-  createUser(createUserDto: CreateUserRequest): User {
-    this.users.push({
-      id: this.users.length + 1,
-      ...createUserDto,
-    } as (typeof this.users)[0]);
-
-    return this.users[this.users.length - 1];
-  }
-
-  updateUser(id: number, user: (typeof this.users)[0]) {
-    const currentUser = this.users.find((user) => user.id === id);
-    if (currentUser) {
-      currentUser.name = user.name;
-      currentUser.email = user.email;
-      currentUser.password = user.password;
-      this.logger.log(`User updated: ${currentUser.name}`);
-      return currentUser;
+  async getUserByEmail(email: string): Promise<ProtoUser> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      throw new RpcException({ code: 5, message: 'User not found' });
     }
-    throw new RpcException('User not found');
+    return toProtoUser(user);
+  }
+
+  async createUser(dto: CreateUserRequest): Promise<ProtoUser> {
+    try {
+      const user = await this.prisma.user.create({
+        data: {
+          name: dto.name,
+          email: dto.email,
+          password: dto.password,
+        },
+      });
+      return toProtoUser(user);
+    } catch (e: unknown) {
+      const err = e as { code?: string; message?: string };
+      if (err?.code === 'P2002') {
+        throw new RpcException({
+          code: 6,
+          message: 'Email already registered',
+        });
+      }
+      this.logger.error('createUser failed', e);
+      throw new RpcException({
+        code: 13,
+        message: err?.message ?? 'Failed to create user',
+      });
+    }
+  }
+
+  async updateUser(request: UpdateUserRequest): Promise<UpdateUserResponse> {
+    const { id, user: payload } = request;
+    if (!payload) {
+      throw new RpcException({ code: 3, message: 'Invalid update payload' });
+    }
+    const data: {
+      name?: string;
+      email?: string;
+      password?: string;
+      role?: 'PROVIDER' | 'CLIENT';
+    } = {};
+    if (payload.name !== undefined && payload.name !== '')
+      data.name = payload.name;
+    if (payload.email !== undefined && payload.email !== '')
+      data.email = payload.email;
+    if (payload.password !== undefined && payload.password !== '')
+      data.password = payload.password;
+    if (payload.role !== undefined && payload.role !== '') {
+      data.role = payload.role === 'PROVIDER' ? 'PROVIDER' : 'CLIENT';
+    }
+    try {
+      const updated = await this.prisma.user.update({
+        where: { id },
+        data,
+      });
+      return {
+        user: toProtoUser(updated),
+        status: 'success',
+        message: 'User updated successfully',
+      };
+    } catch (e: unknown) {
+      const err = e as { code?: string };
+      if (err?.code === 'P2025') {
+        throw new RpcException({ code: 5, message: 'User not found' });
+      }
+      if (err?.code === 'P2002') {
+        throw new RpcException({ code: 6, message: 'Email already in use' });
+      }
+      throw e;
+    }
   }
 }

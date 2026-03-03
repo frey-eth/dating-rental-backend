@@ -2,35 +2,36 @@ import { Controller } from '@nestjs/common';
 import { UsersServiceService } from './users-service.service';
 import {
   GetUserByIdRequest,
+  GetUserByEmailRequest,
+  GetUsersResponse,
   UpdateUserRequest,
+  UpdateUserResponse,
   UsersServiceControllerMethods,
   CreateUserRequest,
-  GetUserByEmailRequest,
 } from 'libs/generated/users';
-import { GetUsersResponse } from 'libs/generated/users';
 
 @Controller()
 @UsersServiceControllerMethods()
 export class UsersServiceController {
   constructor(private readonly usersServiceService: UsersServiceService) {}
 
-  getUsers(): GetUsersResponse {
-    return this.usersServiceService.getUsers();
+  async getUsers(): Promise<GetUsersResponse> {
+    return await this.usersServiceService.getUsers();
   }
 
-  getUserById(request: GetUserByIdRequest) {
-    return this.usersServiceService.getUserById(request.id);
+  async getUserById(request: GetUserByIdRequest) {
+    return await this.usersServiceService.getUserById(request.id);
   }
 
-  createUser(createUserDto: CreateUserRequest) {
+  async createUser(createUserDto: CreateUserRequest) {
     return this.usersServiceService.createUser(createUserDto);
   }
 
-  updateUser(request: UpdateUserRequest) {
-    return this.usersServiceService.updateUser(request.id, request.user!);
+  async updateUser(request: UpdateUserRequest): Promise<UpdateUserResponse> {
+    return await this.usersServiceService.updateUser(request);
   }
 
-  getUserByEmail(request: GetUserByEmailRequest) {
-    return this.usersServiceService.getUserByEmail(request.email);
+  async getUserByEmail(request: GetUserByEmailRequest) {
+    return await this.usersServiceService.getUserByEmail(request.email);
   }
 }

@@ -22,7 +22,7 @@ export class AuthServiceController {
     return await this.authServiceService.login(loginDto);
   }
 
-  refreshToken({ refreshToken }: RefreshTokenRequest) {
-    return this.authServiceService.refreshToken(refreshToken);
+  async refreshToken(request: RefreshTokenRequest) {
+    return await this.authServiceService.refreshToken(request);
   }
 }

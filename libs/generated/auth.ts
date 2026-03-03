@@ -45,10 +45,10 @@ export interface RefreshTokenResponse {
 }
 
 export interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
-  password: string;
+  role: string;
 }
 
 export const AUTH_PACKAGE_NAME = "auth";
@@ -364,13 +364,13 @@ export const RefreshTokenResponse: MessageFns<RefreshTokenResponse> = {
 };
 
 function createBaseUser(): User {
-  return { id: 0, name: "", email: "", password: "" };
+  return { id: "", name: "", email: "", role: "" };
 }
 
 export const User: MessageFns<User> = {
   encode(message: User, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== 0) {
-      writer.uint32(8).int32(message.id);
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
     }
     if (message.name !== "") {
       writer.uint32(18).string(message.name);
@@ -378,8 +378,8 @@ export const User: MessageFns<User> = {
     if (message.email !== "") {
       writer.uint32(26).string(message.email);
     }
-    if (message.password !== "") {
-      writer.uint32(34).string(message.password);
+    if (message.role !== "") {
+      writer.uint32(34).string(message.role);
     }
     return writer;
   },
@@ -392,11 +392,11 @@ export const User: MessageFns<User> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.id = reader.int32();
+          message.id = reader.string();
           continue;
         }
         case 2: {
@@ -420,7 +420,7 @@ export const User: MessageFns<User> = {
             break;
           }
 
-          message.password = reader.string();
+          message.role = reader.string();
           continue;
         }
       }

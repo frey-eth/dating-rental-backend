@@ -1,19 +1,22 @@
-import { User, UsersServiceClient } from 'libs/generated/users';
 import {
   Body,
   Controller,
   Get,
   Inject,
   Param,
-  ParseIntPipe,
-  Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
+import type { User, UsersServiceClient } from 'libs/generated/users';
+import { JwtAuthGuard } from '../../../../libs/common/jwt/jwt-auth.guard';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   private usersService: UsersServiceClient;
+
   constructor(@Inject('USERS_SERVICE') private readonly client: ClientGrpc) {}
 
   onModuleInit() {
@@ -22,22 +25,19 @@ export class UsersController {
   }
 
   @Get()
-  getUsers() {
-    return this.usersService.getUsers({});
+  async getUsers() {
+    return firstValueFrom(this.usersService.getUsers({}));
   }
 
   @Get(':id')
-  getUserById(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.getUserById({ id });
+  async getUserById(@Param('id') id: string) {
+    return firstValueFrom(this.usersService.getUserById({ id }));
   }
 
-  @Post()
-  createUser(@Body() user: User) {
-    return this.usersService.createUser(user);
-  }
-
-  @Put('/:id')
-  updateUser(@Param('id', ParseIntPipe) id: number, @Body() user: User) {
-    return this.usersService.updateUser({ id, user });
+  @Put(':id')
+  async updateUser(@Param('id') id: string, @Body() user: Partial<User>) {
+    return firstValueFrom(
+      this.usersService.updateUser({ id, user: user as User }),
+    );
   }
 }

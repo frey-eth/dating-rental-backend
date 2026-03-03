@@ -13,10 +13,13 @@ import { Observable } from "rxjs";
 export const protobufPackage = "users";
 
 export interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
   password: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface GetUsersRequest {
@@ -24,10 +27,12 @@ export interface GetUsersRequest {
 
 export interface GetUsersResponse {
   users: User[];
+  status: string;
+  message: string;
 }
 
 export interface GetUserByIdRequest {
-  id: number;
+  id: string;
 }
 
 export interface GetUserByEmailRequest {
@@ -35,8 +40,14 @@ export interface GetUserByEmailRequest {
 }
 
 export interface UpdateUserRequest {
-  id: number;
+  id: string;
   user: User | undefined;
+}
+
+export interface UpdateUserResponse {
+  user: User | undefined;
+  status: string;
+  message: string;
 }
 
 export interface CreateUserRequest {
@@ -48,13 +59,13 @@ export interface CreateUserRequest {
 export const USERS_PACKAGE_NAME = "users";
 
 function createBaseUser(): User {
-  return { id: 0, name: "", email: "", password: "" };
+  return { id: "", name: "", email: "", password: "", role: "", createdAt: "", updatedAt: "" };
 }
 
 export const User: MessageFns<User> = {
   encode(message: User, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== 0) {
-      writer.uint32(8).int32(message.id);
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
     }
     if (message.name !== "") {
       writer.uint32(18).string(message.name);
@@ -64,6 +75,15 @@ export const User: MessageFns<User> = {
     }
     if (message.password !== "") {
       writer.uint32(34).string(message.password);
+    }
+    if (message.role !== "") {
+      writer.uint32(42).string(message.role);
+    }
+    if (message.createdAt !== "") {
+      writer.uint32(50).string(message.createdAt);
+    }
+    if (message.updatedAt !== "") {
+      writer.uint32(58).string(message.updatedAt);
     }
     return writer;
   },
@@ -76,11 +96,11 @@ export const User: MessageFns<User> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.id = reader.int32();
+          message.id = reader.string();
           continue;
         }
         case 2: {
@@ -105,6 +125,30 @@ export const User: MessageFns<User> = {
           }
 
           message.password = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.role = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.createdAt = reader.string();
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.updatedAt = reader.string();
           continue;
         }
       }
@@ -144,13 +188,19 @@ export const GetUsersRequest: MessageFns<GetUsersRequest> = {
 };
 
 function createBaseGetUsersResponse(): GetUsersResponse {
-  return { users: [] };
+  return { users: [], status: "", message: "" };
 }
 
 export const GetUsersResponse: MessageFns<GetUsersResponse> = {
   encode(message: GetUsersResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.users) {
       User.encode(v!, writer.uint32(10).fork()).join();
+    }
+    if (message.status !== "") {
+      writer.uint32(18).string(message.status);
+    }
+    if (message.message !== "") {
+      writer.uint32(26).string(message.message);
     }
     return writer;
   },
@@ -170,6 +220,22 @@ export const GetUsersResponse: MessageFns<GetUsersResponse> = {
           message.users.push(User.decode(reader, reader.uint32()));
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.status = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -181,13 +247,13 @@ export const GetUsersResponse: MessageFns<GetUsersResponse> = {
 };
 
 function createBaseGetUserByIdRequest(): GetUserByIdRequest {
-  return { id: 0 };
+  return { id: "" };
 }
 
 export const GetUserByIdRequest: MessageFns<GetUserByIdRequest> = {
   encode(message: GetUserByIdRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== 0) {
-      writer.uint32(8).int32(message.id);
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
     }
     return writer;
   },
@@ -200,11 +266,11 @@ export const GetUserByIdRequest: MessageFns<GetUserByIdRequest> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.id = reader.int32();
+          message.id = reader.string();
           continue;
         }
       }
@@ -255,13 +321,13 @@ export const GetUserByEmailRequest: MessageFns<GetUserByEmailRequest> = {
 };
 
 function createBaseUpdateUserRequest(): UpdateUserRequest {
-  return { id: 0, user: undefined };
+  return { id: "", user: undefined };
 }
 
 export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
   encode(message: UpdateUserRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== 0) {
-      writer.uint32(8).int32(message.id);
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
     }
     if (message.user !== undefined) {
       User.encode(message.user, writer.uint32(18).fork()).join();
@@ -277,11 +343,11 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.id = reader.int32();
+          message.id = reader.string();
           continue;
         }
         case 2: {
@@ -290,6 +356,65 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
           }
 
           message.user = User.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+};
+
+function createBaseUpdateUserResponse(): UpdateUserResponse {
+  return { user: undefined, status: "", message: "" };
+}
+
+export const UpdateUserResponse: MessageFns<UpdateUserResponse> = {
+  encode(message: UpdateUserResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(10).fork()).join();
+    }
+    if (message.status !== "") {
+      writer.uint32(18).string(message.status);
+    }
+    if (message.message !== "") {
+      writer.uint32(26).string(message.message);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UpdateUserResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateUserResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.user = User.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.status = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.message = reader.string();
           continue;
         }
       }
@@ -370,7 +495,7 @@ export interface UsersServiceClient {
 
   createUser(request: CreateUserRequest): Observable<User>;
 
-  updateUser(request: UpdateUserRequest): Observable<User>;
+  updateUser(request: UpdateUserRequest): Observable<UpdateUserResponse>;
 }
 
 export interface UsersServiceController {
@@ -382,7 +507,9 @@ export interface UsersServiceController {
 
   createUser(request: CreateUserRequest): Promise<User> | Observable<User> | User;
 
-  updateUser(request: UpdateUserRequest): Promise<User> | Observable<User> | User;
+  updateUser(
+    request: UpdateUserRequest,
+  ): Promise<UpdateUserResponse> | Observable<UpdateUserResponse> | UpdateUserResponse;
 }
 
 export function UsersServiceControllerMethods() {
@@ -447,8 +574,8 @@ export const UsersServiceService = {
     responseStream: false,
     requestSerialize: (value: UpdateUserRequest): Buffer => Buffer.from(UpdateUserRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): UpdateUserRequest => UpdateUserRequest.decode(value),
-    responseSerialize: (value: User): Buffer => Buffer.from(User.encode(value).finish()),
-    responseDeserialize: (value: Buffer): User => User.decode(value),
+    responseSerialize: (value: UpdateUserResponse): Buffer => Buffer.from(UpdateUserResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): UpdateUserResponse => UpdateUserResponse.decode(value),
   },
 } as const;
 
@@ -457,7 +584,7 @@ export interface UsersServiceServer extends UntypedServiceImplementation {
   getUserById: handleUnaryCall<GetUserByIdRequest, User>;
   getUserByEmail: handleUnaryCall<GetUserByEmailRequest, User>;
   createUser: handleUnaryCall<CreateUserRequest, User>;
-  updateUser: handleUnaryCall<UpdateUserRequest, User>;
+  updateUser: handleUnaryCall<UpdateUserRequest, UpdateUserResponse>;
 }
 
 export interface MessageFns<T> {

@@ -37,6 +37,15 @@
         "tsConfigPath": "apps/bookings-service/tsconfig.app.json"
       }
     },
+    "chats-service": {
+      "type": "application",
+      "root": "apps/chats-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/chats-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/chats-service/tsconfig.app.json"
+      }
+    },
     "notifications-service": {
       "type": "application",
       "root": "apps/notifications-service",
