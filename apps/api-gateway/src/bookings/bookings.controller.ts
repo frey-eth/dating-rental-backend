@@ -5,7 +5,6 @@ import {
   Body,
   Get,
   Param,
-  ParseIntPipe,
   Put,
 } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
@@ -31,13 +30,13 @@ export class BookingsController {
   }
 
   @Get(':id')
-  getBookingById(@Param('id', ParseIntPipe) id: number) {
+  getBookingById(@Param('id') id: string) {
     return this.bookingsServiceClient.getBookingById({ id });
   }
 
   @Put(':id/status')
   updateBookingStatus(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateBookingStatusDto: UpdateBookingStatusDto,
   ) {
     return this.bookingsServiceClient.updateBookingStatus({

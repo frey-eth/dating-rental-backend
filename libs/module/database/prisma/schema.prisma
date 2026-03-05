@@ -29,3 +29,19 @@ enum Role {
   PROVIDER
   CLIENT
 }
+
+//for bookings service
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model Booking {
+  id String @id @default(uuid())
+  userClientId String
+  userProviderId String
+  status BookingStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

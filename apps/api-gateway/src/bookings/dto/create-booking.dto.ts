@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateBookingDto {
   @IsNotEmpty()
-  @IsNumber()
-  userClientId: number;
+  @IsString()
+  userClientId: string;
 
   @IsNotEmpty()
-  @IsNumber()
-  userProviderId: number;
+  @IsString()
+  userProviderId: string;
 }

@@ -13,7 +13,6 @@ import type { User, UsersServiceClient } from 'libs/generated/users';
 import { JwtAuthGuard } from '../../../../libs/common/jwt/jwt-auth.guard';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard)
 export class UsersController {
   private usersService: UsersServiceClient;
 
@@ -35,6 +34,7 @@ export class UsersController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   async updateUser(@Param('id') id: string, @Body() user: Partial<User>) {
     return firstValueFrom(
       this.usersService.updateUser({ id, user: user as User }),

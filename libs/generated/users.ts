@@ -27,8 +27,6 @@ export interface GetUsersRequest {
 
 export interface GetUsersResponse {
   users: User[];
-  status: string;
-  message: string;
 }
 
 export interface GetUserByIdRequest {
@@ -46,8 +44,6 @@ export interface UpdateUserRequest {
 
 export interface UpdateUserResponse {
   user: User | undefined;
-  status: string;
-  message: string;
 }
 
 export interface CreateUserRequest {
@@ -188,19 +184,13 @@ export const GetUsersRequest: MessageFns<GetUsersRequest> = {
 };
 
 function createBaseGetUsersResponse(): GetUsersResponse {
-  return { users: [], status: "", message: "" };
+  return { users: [] };
 }
 
 export const GetUsersResponse: MessageFns<GetUsersResponse> = {
   encode(message: GetUsersResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.users) {
       User.encode(v!, writer.uint32(10).fork()).join();
-    }
-    if (message.status !== "") {
-      writer.uint32(18).string(message.status);
-    }
-    if (message.message !== "") {
-      writer.uint32(26).string(message.message);
     }
     return writer;
   },
@@ -218,22 +208,6 @@ export const GetUsersResponse: MessageFns<GetUsersResponse> = {
           }
 
           message.users.push(User.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.status = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.message = reader.string();
           continue;
         }
       }
@@ -369,19 +343,13 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
 };
 
 function createBaseUpdateUserResponse(): UpdateUserResponse {
-  return { user: undefined, status: "", message: "" };
+  return { user: undefined };
 }
 
 export const UpdateUserResponse: MessageFns<UpdateUserResponse> = {
   encode(message: UpdateUserResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.user !== undefined) {
       User.encode(message.user, writer.uint32(10).fork()).join();
-    }
-    if (message.status !== "") {
-      writer.uint32(18).string(message.status);
-    }
-    if (message.message !== "") {
-      writer.uint32(26).string(message.message);
     }
     return writer;
   },
@@ -399,22 +367,6 @@ export const UpdateUserResponse: MessageFns<UpdateUserResponse> = {
           }
 
           message.user = User.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.status = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.message = reader.string();
           continue;
         }
       }
@@ -495,7 +447,7 @@ export interface UsersServiceClient {
 
   createUser(request: CreateUserRequest): Observable<User>;
 
-  updateUser(request: UpdateUserRequest): Observable<UpdateUserResponse>;
+  updateUser(request: UpdateUserRequest): Observable<User>;
 }
 
 export interface UsersServiceController {
@@ -507,9 +459,7 @@ export interface UsersServiceController {
 
   createUser(request: CreateUserRequest): Promise<User> | Observable<User> | User;
 
-  updateUser(
-    request: UpdateUserRequest,
-  ): Promise<UpdateUserResponse> | Observable<UpdateUserResponse> | UpdateUserResponse;
+  updateUser(request: UpdateUserRequest): Promise<User> | Observable<User> | User;
 }
 
 export function UsersServiceControllerMethods() {
@@ -574,8 +524,8 @@ export const UsersServiceService = {
     responseStream: false,
     requestSerialize: (value: UpdateUserRequest): Buffer => Buffer.from(UpdateUserRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): UpdateUserRequest => UpdateUserRequest.decode(value),
-    responseSerialize: (value: UpdateUserResponse): Buffer => Buffer.from(UpdateUserResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): UpdateUserResponse => UpdateUserResponse.decode(value),
+    responseSerialize: (value: User): Buffer => Buffer.from(User.encode(value).finish()),
+    responseDeserialize: (value: Buffer): User => User.decode(value),
   },
 } as const;
 
@@ -584,7 +534,7 @@ export interface UsersServiceServer extends UntypedServiceImplementation {
   getUserById: handleUnaryCall<GetUserByIdRequest, User>;
   getUserByEmail: handleUnaryCall<GetUserByEmailRequest, User>;
   createUser: handleUnaryCall<CreateUserRequest, User>;
-  updateUser: handleUnaryCall<UpdateUserRequest, UpdateUserResponse>;
+  updateUser: handleUnaryCall<UpdateUserRequest, User>;
 }
 
 export interface MessageFns<T> {

@@ -9,6 +9,7 @@ import {
   UsersServiceControllerMethods,
   CreateUserRequest,
 } from 'libs/generated/users';
+import { Prisma } from 'libs/module/database/generated/prisma/client';
 
 @Controller()
 @UsersServiceControllerMethods()
@@ -16,6 +17,7 @@ export class UsersServiceController {
   constructor(private readonly usersServiceService: UsersServiceService) {}
 
   async getUsers(): Promise<GetUsersResponse> {
+    console.log('getUsers');
     return await this.usersServiceService.getUsers();
   }
 
@@ -28,7 +30,10 @@ export class UsersServiceController {
   }
 
   async updateUser(request: UpdateUserRequest): Promise<UpdateUserResponse> {
-    return await this.usersServiceService.updateUser(request);
+    return await this.usersServiceService.updateUser({
+      where: { id: request.id },
+      data: request.user as Prisma.UserUpdateInput,
+    });
   }
 
   async getUserByEmail(request: GetUserByEmailRequest) {

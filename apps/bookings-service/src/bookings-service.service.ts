@@ -1,41 +1,33 @@
-import { Injectable } from '@nestjs/common';
-import {
-  CreateBookingRequest,
-  UpdateBookingStatusRequest,
-} from 'libs/generated/bookings';
+import { Injectable, Logger } from '@nestjs/common';
+import { Prisma } from 'libs/module/database/generated/prisma/client';
+import { PrismaService } from 'libs/module/database/prisma.service';
 
 @Injectable()
 export class BookingsServiceService {
-  getHello(): string {
-    return 'Hello World!';
+  private readonly logger = new Logger(BookingsServiceService.name);
+  constructor(private readonly prisma: PrismaService) {}
+  async createBooking(createBookingDto: Prisma.BookingCreateInput) {
+    const booking = await this.prisma.booking.create({
+      data: createBookingDto,
+    });
+    return booking;
   }
 
-  createBooking(createBookingDto: CreateBookingRequest) {
-    return {
-      id: 1,
-      userClientId: createBookingDto.userClientId,
-      userProviderId: createBookingDto.userProviderId,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+  async getBookingById(id: string) {
+    const booking = await this.prisma.booking.findUnique({
+      where: { id },
+    });
+    return booking;
   }
 
-  getBookingById(id: number) {
-    return {
-      id: id,
-      userClientId: 1,
-      userProviderId: 1,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-  }
-
-  updateBookingStatus(request: UpdateBookingStatusRequest) {
-    return {
-      id: request.id,
-      status: request.status,
-    };
+  async updateBookingStatus(
+    id: string,
+    status: 'PENDING' | 'CONFIRMED' | 'CANCELLED',
+  ) {
+    const booking = await this.prisma.booking.update({
+      where: { id },
+      data: { status },
+    });
+    return booking;
   }
 }

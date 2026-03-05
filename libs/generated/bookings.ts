@@ -13,23 +13,23 @@ import { Observable } from "rxjs";
 export const protobufPackage = "bookings";
 
 export interface CreateBookingRequest {
-  userClientId: number;
-  userProviderId: number;
+  userClientId: string;
+  userProviderId: string;
 }
 
 export interface GetBookingByIdRequest {
-  id: number;
+  id: string;
 }
 
 export interface UpdateBookingStatusRequest {
-  id: number;
+  id: string;
   status: string;
 }
 
 export interface Booking {
-  id: number;
-  userClientId: number;
-  userProviderId: number;
+  id: string;
+  userClientId: string;
+  userProviderId: string;
   status: string;
   createdAt: string;
   updatedAt: string;
@@ -38,16 +38,16 @@ export interface Booking {
 export const BOOKINGS_PACKAGE_NAME = "bookings";
 
 function createBaseCreateBookingRequest(): CreateBookingRequest {
-  return { userClientId: 0, userProviderId: 0 };
+  return { userClientId: "", userProviderId: "" };
 }
 
 export const CreateBookingRequest: MessageFns<CreateBookingRequest> = {
   encode(message: CreateBookingRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.userClientId !== 0) {
-      writer.uint32(8).int32(message.userClientId);
+    if (message.userClientId !== "") {
+      writer.uint32(10).string(message.userClientId);
     }
-    if (message.userProviderId !== 0) {
-      writer.uint32(16).int32(message.userProviderId);
+    if (message.userProviderId !== "") {
+      writer.uint32(18).string(message.userProviderId);
     }
     return writer;
   },
@@ -60,19 +60,19 @@ export const CreateBookingRequest: MessageFns<CreateBookingRequest> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.userClientId = reader.int32();
+          message.userClientId = reader.string();
           continue;
         }
         case 2: {
-          if (tag !== 16) {
+          if (tag !== 18) {
             break;
           }
 
-          message.userProviderId = reader.int32();
+          message.userProviderId = reader.string();
           continue;
         }
       }
@@ -86,13 +86,13 @@ export const CreateBookingRequest: MessageFns<CreateBookingRequest> = {
 };
 
 function createBaseGetBookingByIdRequest(): GetBookingByIdRequest {
-  return { id: 0 };
+  return { id: "" };
 }
 
 export const GetBookingByIdRequest: MessageFns<GetBookingByIdRequest> = {
   encode(message: GetBookingByIdRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== 0) {
-      writer.uint32(8).int32(message.id);
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
     }
     return writer;
   },
@@ -105,11 +105,11 @@ export const GetBookingByIdRequest: MessageFns<GetBookingByIdRequest> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.id = reader.int32();
+          message.id = reader.string();
           continue;
         }
       }
@@ -123,13 +123,13 @@ export const GetBookingByIdRequest: MessageFns<GetBookingByIdRequest> = {
 };
 
 function createBaseUpdateBookingStatusRequest(): UpdateBookingStatusRequest {
-  return { id: 0, status: "" };
+  return { id: "", status: "" };
 }
 
 export const UpdateBookingStatusRequest: MessageFns<UpdateBookingStatusRequest> = {
   encode(message: UpdateBookingStatusRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== 0) {
-      writer.uint32(8).int32(message.id);
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
     }
     if (message.status !== "") {
       writer.uint32(18).string(message.status);
@@ -145,11 +145,11 @@ export const UpdateBookingStatusRequest: MessageFns<UpdateBookingStatusRequest> 
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.id = reader.int32();
+          message.id = reader.string();
           continue;
         }
         case 2: {
@@ -171,19 +171,19 @@ export const UpdateBookingStatusRequest: MessageFns<UpdateBookingStatusRequest> 
 };
 
 function createBaseBooking(): Booking {
-  return { id: 0, userClientId: 0, userProviderId: 0, status: "", createdAt: "", updatedAt: "" };
+  return { id: "", userClientId: "", userProviderId: "", status: "", createdAt: "", updatedAt: "" };
 }
 
 export const Booking: MessageFns<Booking> = {
   encode(message: Booking, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== 0) {
-      writer.uint32(8).int32(message.id);
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
     }
-    if (message.userClientId !== 0) {
-      writer.uint32(16).int32(message.userClientId);
+    if (message.userClientId !== "") {
+      writer.uint32(18).string(message.userClientId);
     }
-    if (message.userProviderId !== 0) {
-      writer.uint32(24).int32(message.userProviderId);
+    if (message.userProviderId !== "") {
+      writer.uint32(26).string(message.userProviderId);
     }
     if (message.status !== "") {
       writer.uint32(34).string(message.status);
@@ -205,27 +205,27 @@ export const Booking: MessageFns<Booking> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.id = reader.int32();
+          message.id = reader.string();
           continue;
         }
         case 2: {
-          if (tag !== 16) {
+          if (tag !== 18) {
             break;
           }
 
-          message.userClientId = reader.int32();
+          message.userClientId = reader.string();
           continue;
         }
         case 3: {
-          if (tag !== 24) {
+          if (tag !== 26) {
             break;
           }
 
-          message.userProviderId = reader.int32();
+          message.userProviderId = reader.string();
           continue;
         }
         case 4: {

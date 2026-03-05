@@ -15,7 +15,10 @@ export class BookingsServiceController {
   ) {}
 
   createBooking(request: CreateBookingRequest) {
-    return this.bookingsServiceService.createBooking(request);
+    return this.bookingsServiceService.createBooking({
+      userClientId: request.userClientId,
+      userProviderId: request.userProviderId,
+    });
   }
 
   getBookingById(request: GetBookingByIdRequest) {
@@ -23,6 +26,9 @@ export class BookingsServiceController {
   }
 
   updateBookingStatus(request: UpdateBookingStatusRequest) {
-    return this.bookingsServiceService.updateBookingStatus(request);
+    return this.bookingsServiceService.updateBookingStatus(
+      request.id,
+      request.status as 'PENDING' | 'CONFIRMED' | 'CANCELLED',
+    );
   }
 }

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { BookingsServiceController } from './bookings-service.controller';
 import { BookingsServiceService } from './bookings-service.service';
 import { ConfigModule } from '@nestjs/config';
+import { PrismaService } from 'libs/module/database/prisma.service';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -10,6 +11,6 @@ import { ConfigModule } from '@nestjs/config';
     }),
   ],
   controllers: [BookingsServiceController],
-  providers: [BookingsServiceService],
+  providers: [BookingsServiceService, PrismaService],
 })
 export class BookingsServiceModule {}

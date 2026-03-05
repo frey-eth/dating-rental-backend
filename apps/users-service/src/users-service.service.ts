@@ -1,14 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import type {
-  CreateUserRequest,
-  UpdateUserRequest,
   User as ProtoUser,
   GetUsersResponse,
   UpdateUserResponse,
+  CreateUserRequest,
 } from 'libs/generated/users';
-import { PrismaService } from './prisma.service';
 import { toProtoUser } from './user.mapper';
+import { PrismaService } from 'libs/module/database/prisma.service';
+import { Prisma } from 'libs/module/database/generated/prisma/client';
 
 @Injectable()
 export class UsersServiceService {
@@ -20,8 +20,6 @@ export class UsersServiceService {
     const users = await this.prisma.user.findMany();
     return {
       users: users.map(toProtoUser),
-      status: 'success',
-      message: 'Users fetched successfully',
     };
   }
 
@@ -67,35 +65,21 @@ export class UsersServiceService {
     }
   }
 
-  async updateUser(request: UpdateUserRequest): Promise<UpdateUserResponse> {
-    const { id, user: payload } = request;
-    if (!payload) {
+  async updateUser(params: {
+    where: Prisma.UserWhereUniqueInput;
+    data: Prisma.UserUpdateInput;
+  }): Promise<UpdateUserResponse> {
+    const { where, data } = params;
+    if (!where || !data) {
       throw new RpcException({ code: 3, message: 'Invalid update payload' });
-    }
-    const data: {
-      name?: string;
-      email?: string;
-      password?: string;
-      role?: 'PROVIDER' | 'CLIENT';
-    } = {};
-    if (payload.name !== undefined && payload.name !== '')
-      data.name = payload.name;
-    if (payload.email !== undefined && payload.email !== '')
-      data.email = payload.email;
-    if (payload.password !== undefined && payload.password !== '')
-      data.password = payload.password;
-    if (payload.role !== undefined && payload.role !== '') {
-      data.role = payload.role === 'PROVIDER' ? 'PROVIDER' : 'CLIENT';
     }
     try {
       const updated = await this.prisma.user.update({
-        where: { id },
+        where,
         data,
       });
       return {
         user: toProtoUser(updated),
-        status: 'success',
-        message: 'User updated successfully',
       };
     } catch (e: unknown) {
       const err = e as { code?: string };

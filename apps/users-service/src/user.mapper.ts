@@ -11,7 +11,7 @@ export function toProtoUser(prismaUser: User): ProtoUser {
     name: prismaUser.name,
     email: prismaUser.email,
     password: prismaUser.password,
-    role: typeof prismaUser.role === 'string' ? prismaUser.role : String(prismaUser.role),
+    role: prismaUser.role,
     createdAt:
       prismaUser.createdAt instanceof Date
         ? prismaUser.createdAt.toISOString()
