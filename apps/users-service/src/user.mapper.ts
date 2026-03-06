@@ -1,24 +1,20 @@
 import type { User as ProtoUser } from 'libs/generated/users';
-import { User } from '../generated/prisma/client';
+import type { UserDocument } from './schema/user.schema';
 
-/**
- * Prisma User shape (from generated client) - role enum, Date for timestamps
- */
-
-export function toProtoUser(prismaUser: User): ProtoUser {
+export function toProtoUser(doc: UserDocument): ProtoUser {
   return {
-    id: prismaUser.id,
-    name: prismaUser.name,
-    email: prismaUser.email,
-    password: prismaUser.password,
-    role: prismaUser.role,
+    id: doc._id.toString(),
+    name: doc.name,
+    email: doc.email,
+    password: doc.password,
+    role: doc.role,
     createdAt:
-      prismaUser.createdAt instanceof Date
-        ? prismaUser.createdAt.toISOString()
-        : String(prismaUser.createdAt),
+      doc.createdAt instanceof Date
+        ? doc.createdAt.toISOString()
+        : String(doc.createdAt ?? ''),
     updatedAt:
-      prismaUser.updatedAt instanceof Date
-        ? prismaUser.updatedAt.toISOString()
-        : String(prismaUser.updatedAt),
+      doc.updatedAt instanceof Date
+        ? doc.updatedAt.toISOString()
+        : String(doc.updatedAt ?? ''),
   };
 }

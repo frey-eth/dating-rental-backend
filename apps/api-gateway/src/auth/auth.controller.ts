@@ -12,10 +12,10 @@ import {
   AuthServiceClient,
   LoginRequest,
   LoginResponse,
-  RegisterRequest,
   RegisterResponse,
   RefreshTokenResponse,
 } from 'libs/generated/auth';
+import { RegisterDto } from './dto/register-dto';
 
 @Controller('auth')
 export class AuthController {
@@ -30,7 +30,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
-  async register(@Body() dto: RegisterRequest): Promise<RegisterResponse> {
+  async register(@Body() dto: RegisterDto): Promise<RegisterResponse> {
     return firstValueFrom(this.authServiceClient.register(dto));
   }
 

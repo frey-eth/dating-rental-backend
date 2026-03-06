@@ -19,6 +19,12 @@ export class BookingsServiceController {
     return this.bookingsServiceService.createBooking({
       userClientId: request.userClientId,
       userProviderId: request.userProviderId,
+      startTime: new Date(),
+      endTime: new Date(),
+      amount: 0,
+      currency: 'USD',
+      paymentMethod: 'CARD',
+      status: 'PENDING',
     });
   }
 

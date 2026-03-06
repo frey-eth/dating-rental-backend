@@ -14,22 +14,6 @@ datasource db {
 }
 
 
-model User {
-  id String @id @default(uuid())
-  name String
-  email String @unique
-  password String
-  role Role @default(CLIENT)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-
-enum Role {
-  PROVIDER
-  CLIENT
-}
-
 //for bookings service
 enum BookingStatus {
   PENDING
@@ -41,10 +25,20 @@ model Booking {
   id String @id @default(uuid())
   userClientId String
   userProviderId String
+  startTime DateTime
+  endTime DateTime
+  amount Decimal
+  currency String
+  paymentMethod String
   status BookingStatus @default(PENDING)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([userClientId, userProviderId, startTime, endTime])
 }
+
+
 
 model Payment {
   id String @id @default(uuid())

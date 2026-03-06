@@ -24,6 +24,18 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  mongo:
+    container_name: 'mongo'
+    image: 'mongo:latest'
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 'root'
+      MONGO_INITDB_ROOT_PASSWORD: 'password'
+    restart: always
+
   redis:
     container_name: 'redis'
     image: 'redis:7-alpine'
@@ -36,3 +48,4 @@ volumes:
   rabbitmq_data:
   postgres_data:
   redis_data:
+  mongo_data:
