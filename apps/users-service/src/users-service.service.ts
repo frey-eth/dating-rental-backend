@@ -7,8 +7,8 @@ import type {
   CreateUserRequest,
 } from 'libs/generated/users';
 import { toProtoUser } from './user.mapper';
-import { PrismaService } from 'libs/module/database/prisma.service';
-import { Prisma } from 'libs/module/database/generated/prisma/client';
+import { PrismaService } from 'libs/services/database/prisma.service';
+import { Prisma } from 'libs/services/database/generated/prisma/client';
 
 @Injectable()
 export class UsersServiceService {

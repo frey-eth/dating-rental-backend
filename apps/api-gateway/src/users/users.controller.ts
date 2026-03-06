@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Inject,
   Param,
   Put,
@@ -22,12 +24,13 @@ export class UsersController {
     this.usersService =
       this.client.getService<UsersServiceClient>('UsersService');
   }
-
+  @HttpCode(HttpStatus.OK)
   @Get()
   async getUsers() {
     return firstValueFrom(this.usersService.getUsers({}));
   }
 
+  @HttpCode(HttpStatus.OK)
   @Get(':id')
   async getUserById(@Param('id') id: string) {
     return firstValueFrom(this.usersService.getUserById({ id }));

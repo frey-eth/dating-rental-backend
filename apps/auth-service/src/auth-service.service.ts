@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ClientGrpc, RpcException } from '@nestjs/microservices';
+import { ClientGrpc, ClientProxy, RpcException } from '@nestjs/microservices';
 import * as bcrypt from 'bcryptjs';
 import { firstValueFrom } from 'rxjs';
 import type {
@@ -18,10 +18,15 @@ import type {
   User as AuthUser,
 } from 'libs/generated/auth';
 import type { UsersServiceClient } from 'libs/generated/users';
+import {
+  EmailEventPatterns,
+  UserRegisteredPayload,
+} from 'libs/common/events/email.events';
 
 const SALT_ROUNDS = 10;
 const ACCESS_TOKEN_EXPIRY = '15m';
 const REFRESH_TOKEN_EXPIRY = '7d';
+const ACTIVATION_TOKEN_EXPIRY = '24h';
 
 @Injectable()
 export class AuthServiceService {
@@ -30,6 +35,7 @@ export class AuthServiceService {
 
   constructor(
     @Inject('USERS_SERVICE') private readonly client: ClientGrpc,
+    @Inject('EMAIL_SERVICE') private readonly emailClient: ClientProxy,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -98,7 +104,6 @@ export class AuthServiceService {
       );
     } catch (err: unknown) {
       const msg = this.getErrorMessage(err);
-      this.logger.warn(`register: users-service error: ${msg}`);
       if (msg.includes('already registered') || msg.includes('P2002')) {
         throw new RpcException({
           code: 6,
@@ -115,6 +120,30 @@ export class AuthServiceService {
       email: created.email,
       role: (created as { role?: string }).role ?? 'CLIENT',
     });
+
+    const activationToken = await this.jwtService.signAsync(
+      {
+        sub: String(created.id),
+        email: created.email,
+        type: 'email_verification',
+      },
+      { expiresIn: ACTIVATION_TOKEN_EXPIRY },
+    );
+    const emailPayload: UserRegisteredPayload = {
+      email: created.email,
+      name: created.name,
+      activationToken,
+    };
+    this.emailClient
+      .emit(EmailEventPatterns.USER_REGISTERED, emailPayload)
+      .subscribe({
+        error: (err) =>
+          this.logger.warn(
+            'Failed to emit user.registered to email service',
+            err,
+          ),
+      });
+
     return {
       user: this.toAuthUser(created),
       accessToken,

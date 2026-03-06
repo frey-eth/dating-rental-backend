@@ -1,4 +1,11 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Post,
+} from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import {
@@ -21,6 +28,7 @@ export class AuthController {
       this.client.getService<AuthServiceClient>('AuthService');
   }
 
+  @HttpCode(HttpStatus.CREATED)
   @Post('register')
   async register(@Body() dto: RegisterRequest): Promise<RegisterResponse> {
     return firstValueFrom(this.authServiceClient.register(dto));

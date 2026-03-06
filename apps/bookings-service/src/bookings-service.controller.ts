@@ -6,6 +6,7 @@ import {
   GetBookingByIdRequest,
   UpdateBookingStatusRequest,
 } from 'libs/generated/bookings';
+import { BookingStatus } from 'libs/services/database/generated/prisma/enums';
 
 @BookingsServiceControllerMethods()
 @Controller()
@@ -28,7 +29,7 @@ export class BookingsServiceController {
   updateBookingStatus(request: UpdateBookingStatusRequest) {
     return this.bookingsServiceService.updateBookingStatus(
       request.id,
-      request.status as 'PENDING' | 'CONFIRMED' | 'CANCELLED',
+      request.status as BookingStatus,
     );
   }
 }

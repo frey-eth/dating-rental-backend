@@ -33,6 +33,17 @@ import { join } from 'path';
           protoPath: join(process.cwd(), 'libs/proto/users.proto'),
         },
       },
+      {
+        name: 'EMAIL_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: [
+            process.env.RABBITMQ_URL ?? 'amqp://user:password@localhost:5672',
+          ],
+          queue: process.env.EMAIL_QUEUE ?? 'email_queue',
+          queueOptions: { durable: true },
+        },
+      },
     ]),
   ],
   controllers: [AuthServiceController],

@@ -46,6 +46,15 @@
         "tsConfigPath": "apps/chats-service/tsconfig.app.json"
       }
     },
+    "email-service": {
+      "type": "application",
+      "root": "apps/email-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/email-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/email-service/tsconfig.app.json"
+      }
+    },
     "notifications-service": {
       "type": "application",
       "root": "apps/notifications-service",

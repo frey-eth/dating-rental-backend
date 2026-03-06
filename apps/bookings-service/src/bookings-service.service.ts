@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Prisma } from 'libs/module/database/generated/prisma/client';
-import { PrismaService } from 'libs/module/database/prisma.service';
+import { Prisma } from 'libs/services/database/generated/prisma/client';
+import { PrismaService } from 'libs/services/database/prisma.service';
 
 @Injectable()
 export class BookingsServiceService {

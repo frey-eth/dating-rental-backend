@@ -9,7 +9,7 @@ import {
   UsersServiceControllerMethods,
   CreateUserRequest,
 } from 'libs/generated/users';
-import { Prisma } from 'libs/module/database/generated/prisma/client';
+import { Prisma } from 'libs/services/database/generated/prisma/client';
 
 @Controller()
 @UsersServiceControllerMethods()
