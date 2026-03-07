@@ -1,24 +1,46 @@
 import {
+  CanActivate,
   ExecutionContext,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Observable } from 'rxjs';
+import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    return super.canActivate(context);
+export class AuthGuard implements CanActivate {
+  constructor(private jwtService: JwtService) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest<Request>();
+    const token = this.extractTokenFromHeader(request);
+    if (!token) {
+      throw new UnauthorizedException();
+    }
+    try {
+      const payload = await this.jwtService.verifyAsync<{
+        sub?: string;
+        userId?: string;
+        email: string;
+        role?: string;
+      }>(token);
+      const userId = payload.sub ?? payload.userId;
+      if (!userId || !payload.email) {
+        throw new UnauthorizedException();
+      }
+      request['user'] = {
+        userId,
+        email: payload.email,
+        role: payload.role ?? 'CLIENT',
+      };
+    } catch {
+      throw new UnauthorizedException();
+    }
+    return true;
   }
 
-  handleRequest<TUser>(err: Error | null, user: TUser): TUser {
-    if (err || !user) {
-      throw err ?? new UnauthorizedException('Invalid or missing token');
-    }
-
-    return user;
+  private extractTokenFromHeader(request: Request): string | undefined {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
   }
 }

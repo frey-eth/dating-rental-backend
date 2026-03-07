@@ -4,6 +4,7 @@ import {
   BookingsServiceControllerMethods,
   CreateBookingRequest,
   GetBookingByIdRequest,
+  GetBookingsByUserIdRequest,
   UpdateBookingStatusRequest,
 } from 'libs/generated/bookings';
 import { BookingStatus } from 'libs/services/database/generated/prisma/enums';
@@ -15,17 +16,8 @@ export class BookingsServiceController {
     private readonly bookingsServiceService: BookingsServiceService,
   ) {}
 
-  createBooking(request: CreateBookingRequest) {
-    return this.bookingsServiceService.createBooking({
-      userClientId: request.userClientId,
-      userProviderId: request.userProviderId,
-      startTime: new Date(),
-      endTime: new Date(),
-      amount: 0,
-      currency: 'USD',
-      paymentMethod: 'CARD',
-      status: 'PENDING',
-    });
+  createBooking(data: CreateBookingRequest) {
+    return this.bookingsServiceService.createBooking(data);
   }
 
   getBookingById(request: GetBookingByIdRequest) {
@@ -37,5 +29,9 @@ export class BookingsServiceController {
       request.id,
       request.status as BookingStatus,
     );
+  }
+
+  getBookingsByUserId(request: GetBookingsByUserIdRequest) {
+    return this.bookingsServiceService.getBookingsByUserId(request.userId);
   }
 }

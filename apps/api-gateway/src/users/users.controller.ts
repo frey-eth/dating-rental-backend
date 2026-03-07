@@ -12,7 +12,7 @@ import {
 import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import type { User, UsersServiceClient } from 'libs/generated/users';
-import { JwtAuthGuard } from '../../../../libs/common/jwt/jwt-auth.guard';
+import { AuthGuard } from 'libs/common/jwt/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -26,18 +26,20 @@ export class UsersController {
   }
   @HttpCode(HttpStatus.OK)
   @Get()
+  @UseGuards(AuthGuard)
   async getUsers() {
     return firstValueFrom(this.usersService.getUsers({}));
   }
 
   @HttpCode(HttpStatus.OK)
   @Get(':id')
+  @UseGuards(AuthGuard)
   async getUserById(@Param('id') id: string) {
     return firstValueFrom(this.usersService.getUserById({ id }));
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   async updateUser(@Param('id') id: string, @Body() user: Partial<User>) {
     return firstValueFrom(
       this.usersService.updateUser({ id, user: user as User }),

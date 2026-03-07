@@ -13,8 +13,13 @@ import { Observable } from "rxjs";
 export const protobufPackage = "bookings";
 
 export interface CreateBookingRequest {
-  userClientId: string;
-  userProviderId: string;
+  clientId: string;
+  providerId: string;
+  startTime: string;
+  endTime: string;
+  amount: string;
+  currency: string;
+  paymentMethod: string;
 }
 
 export interface GetBookingByIdRequest {
@@ -26,10 +31,23 @@ export interface UpdateBookingStatusRequest {
   status: string;
 }
 
+export interface GetBookingsByUserIdRequest {
+  userId: string;
+}
+
+export interface GetBookingsByUserIdResponse {
+  bookings: Booking[];
+}
+
 export interface Booking {
   id: string;
-  userClientId: string;
-  userProviderId: string;
+  clientId: string;
+  providerId: string;
+  startTime: string;
+  endTime: string;
+  amount: string;
+  currency: string;
+  paymentMethod: string;
   status: string;
   createdAt: string;
   updatedAt: string;
@@ -38,16 +56,31 @@ export interface Booking {
 export const BOOKINGS_PACKAGE_NAME = "bookings";
 
 function createBaseCreateBookingRequest(): CreateBookingRequest {
-  return { userClientId: "", userProviderId: "" };
+  return { clientId: "", providerId: "", startTime: "", endTime: "", amount: "", currency: "", paymentMethod: "" };
 }
 
 export const CreateBookingRequest: MessageFns<CreateBookingRequest> = {
   encode(message: CreateBookingRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.userClientId !== "") {
-      writer.uint32(10).string(message.userClientId);
+    if (message.clientId !== "") {
+      writer.uint32(10).string(message.clientId);
     }
-    if (message.userProviderId !== "") {
-      writer.uint32(18).string(message.userProviderId);
+    if (message.providerId !== "") {
+      writer.uint32(18).string(message.providerId);
+    }
+    if (message.startTime !== "") {
+      writer.uint32(26).string(message.startTime);
+    }
+    if (message.endTime !== "") {
+      writer.uint32(34).string(message.endTime);
+    }
+    if (message.amount !== "") {
+      writer.uint32(42).string(message.amount);
+    }
+    if (message.currency !== "") {
+      writer.uint32(50).string(message.currency);
+    }
+    if (message.paymentMethod !== "") {
+      writer.uint32(58).string(message.paymentMethod);
     }
     return writer;
   },
@@ -64,7 +97,7 @@ export const CreateBookingRequest: MessageFns<CreateBookingRequest> = {
             break;
           }
 
-          message.userClientId = reader.string();
+          message.clientId = reader.string();
           continue;
         }
         case 2: {
@@ -72,7 +105,47 @@ export const CreateBookingRequest: MessageFns<CreateBookingRequest> = {
             break;
           }
 
-          message.userProviderId = reader.string();
+          message.providerId = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.startTime = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.endTime = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.amount = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.currency = reader.string();
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.paymentMethod = reader.string();
           continue;
         }
       }
@@ -170,8 +243,94 @@ export const UpdateBookingStatusRequest: MessageFns<UpdateBookingStatusRequest> 
   },
 };
 
+function createBaseGetBookingsByUserIdRequest(): GetBookingsByUserIdRequest {
+  return { userId: "" };
+}
+
+export const GetBookingsByUserIdRequest: MessageFns<GetBookingsByUserIdRequest> = {
+  encode(message: GetBookingsByUserIdRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.userId !== "") {
+      writer.uint32(10).string(message.userId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetBookingsByUserIdRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetBookingsByUserIdRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+};
+
+function createBaseGetBookingsByUserIdResponse(): GetBookingsByUserIdResponse {
+  return { bookings: [] };
+}
+
+export const GetBookingsByUserIdResponse: MessageFns<GetBookingsByUserIdResponse> = {
+  encode(message: GetBookingsByUserIdResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.bookings) {
+      Booking.encode(v!, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetBookingsByUserIdResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetBookingsByUserIdResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.bookings.push(Booking.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+};
+
 function createBaseBooking(): Booking {
-  return { id: "", userClientId: "", userProviderId: "", status: "", createdAt: "", updatedAt: "" };
+  return {
+    id: "",
+    clientId: "",
+    providerId: "",
+    startTime: "",
+    endTime: "",
+    amount: "",
+    currency: "",
+    paymentMethod: "",
+    status: "",
+    createdAt: "",
+    updatedAt: "",
+  };
 }
 
 export const Booking: MessageFns<Booking> = {
@@ -179,20 +338,35 @@ export const Booking: MessageFns<Booking> = {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
-    if (message.userClientId !== "") {
-      writer.uint32(18).string(message.userClientId);
+    if (message.clientId !== "") {
+      writer.uint32(18).string(message.clientId);
     }
-    if (message.userProviderId !== "") {
-      writer.uint32(26).string(message.userProviderId);
+    if (message.providerId !== "") {
+      writer.uint32(26).string(message.providerId);
+    }
+    if (message.startTime !== "") {
+      writer.uint32(34).string(message.startTime);
+    }
+    if (message.endTime !== "") {
+      writer.uint32(42).string(message.endTime);
+    }
+    if (message.amount !== "") {
+      writer.uint32(50).string(message.amount);
+    }
+    if (message.currency !== "") {
+      writer.uint32(58).string(message.currency);
+    }
+    if (message.paymentMethod !== "") {
+      writer.uint32(66).string(message.paymentMethod);
     }
     if (message.status !== "") {
-      writer.uint32(34).string(message.status);
+      writer.uint32(74).string(message.status);
     }
     if (message.createdAt !== "") {
-      writer.uint32(42).string(message.createdAt);
+      writer.uint32(82).string(message.createdAt);
     }
     if (message.updatedAt !== "") {
-      writer.uint32(50).string(message.updatedAt);
+      writer.uint32(90).string(message.updatedAt);
     }
     return writer;
   },
@@ -217,7 +391,7 @@ export const Booking: MessageFns<Booking> = {
             break;
           }
 
-          message.userClientId = reader.string();
+          message.clientId = reader.string();
           continue;
         }
         case 3: {
@@ -225,7 +399,7 @@ export const Booking: MessageFns<Booking> = {
             break;
           }
 
-          message.userProviderId = reader.string();
+          message.providerId = reader.string();
           continue;
         }
         case 4: {
@@ -233,7 +407,7 @@ export const Booking: MessageFns<Booking> = {
             break;
           }
 
-          message.status = reader.string();
+          message.startTime = reader.string();
           continue;
         }
         case 5: {
@@ -241,11 +415,51 @@ export const Booking: MessageFns<Booking> = {
             break;
           }
 
-          message.createdAt = reader.string();
+          message.endTime = reader.string();
           continue;
         }
         case 6: {
           if (tag !== 50) {
+            break;
+          }
+
+          message.amount = reader.string();
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.currency = reader.string();
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.paymentMethod = reader.string();
+          continue;
+        }
+        case 9: {
+          if (tag !== 74) {
+            break;
+          }
+
+          message.status = reader.string();
+          continue;
+        }
+        case 10: {
+          if (tag !== 82) {
+            break;
+          }
+
+          message.createdAt = reader.string();
+          continue;
+        }
+        case 11: {
+          if (tag !== 90) {
             break;
           }
 
@@ -268,6 +482,8 @@ export interface BookingsServiceClient {
   getBookingById(request: GetBookingByIdRequest): Observable<Booking>;
 
   updateBookingStatus(request: UpdateBookingStatusRequest): Observable<Booking>;
+
+  getBookingsByUserId(request: GetBookingsByUserIdRequest): Observable<GetBookingsByUserIdResponse>;
 }
 
 export interface BookingsServiceController {
@@ -276,11 +492,15 @@ export interface BookingsServiceController {
   getBookingById(request: GetBookingByIdRequest): Promise<Booking> | Observable<Booking> | Booking;
 
   updateBookingStatus(request: UpdateBookingStatusRequest): Promise<Booking> | Observable<Booking> | Booking;
+
+  getBookingsByUserId(
+    request: GetBookingsByUserIdRequest,
+  ): Promise<GetBookingsByUserIdResponse> | Observable<GetBookingsByUserIdResponse> | GetBookingsByUserIdResponse;
 }
 
 export function BookingsServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["createBooking", "getBookingById", "updateBookingStatus"];
+    const grpcMethods: string[] = ["createBooking", "getBookingById", "updateBookingStatus", "getBookingsByUserId"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("BookingsService", method)(constructor.prototype[method], method, descriptor);
@@ -326,12 +546,24 @@ export const BookingsServiceService = {
     responseSerialize: (value: Booking): Buffer => Buffer.from(Booking.encode(value).finish()),
     responseDeserialize: (value: Buffer): Booking => Booking.decode(value),
   },
+  getBookingsByUserId: {
+    path: "/bookings.BookingsService/GetBookingsByUserId",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetBookingsByUserIdRequest): Buffer =>
+      Buffer.from(GetBookingsByUserIdRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): GetBookingsByUserIdRequest => GetBookingsByUserIdRequest.decode(value),
+    responseSerialize: (value: GetBookingsByUserIdResponse): Buffer =>
+      Buffer.from(GetBookingsByUserIdResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): GetBookingsByUserIdResponse => GetBookingsByUserIdResponse.decode(value),
+  },
 } as const;
 
 export interface BookingsServiceServer extends UntypedServiceImplementation {
   createBooking: handleUnaryCall<CreateBookingRequest, Booking>;
   getBookingById: handleUnaryCall<GetBookingByIdRequest, Booking>;
   updateBookingStatus: handleUnaryCall<UpdateBookingStatusRequest, Booking>;
+  getBookingsByUserId: handleUnaryCall<GetBookingsByUserIdRequest, GetBookingsByUserIdResponse>;
 }
 
 export interface MessageFns<T> {

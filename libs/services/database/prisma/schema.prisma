@@ -18,24 +18,29 @@ datasource db {
 enum BookingStatus {
   PENDING
   CONFIRMED
+  COMPLETED
   CANCELLED
 }
 
 model Booking {
-  id String @id @default(uuid())
-  userClientId String
-  userProviderId String
-  startTime DateTime
-  endTime DateTime
-  amount Decimal
-  currency String
-  paymentMethod String
-  status BookingStatus @default(PENDING)
+  id          String        @id @default(uuid())
+  clientId    String        @map("client_id")
+  providerId  String        @map("provider_id")
+  startTime   DateTime      @map("start_time")
+  endTime     DateTime      @map("end_time")
+  amount      Decimal
+  currency    String
+  paymentMethod String      @map("payment_method")
+  status      BookingStatus @default(PENDING)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
 
-  @@index([userClientId, userProviderId, startTime, endTime])
+  
+  @@index([clientId])
+  @@index([providerId])
+  @@index([providerId, startTime, endTime])
+  @@map("bookings")
 }
 
 

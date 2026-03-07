@@ -6,11 +6,17 @@ service BookingsService {
   rpc CreateBooking(CreateBookingRequest) returns (Booking);
   rpc GetBookingById(GetBookingByIdRequest) returns (Booking);
   rpc UpdateBookingStatus(UpdateBookingStatusRequest) returns (Booking);
+  rpc GetBookingsByUserId(GetBookingsByUserIdRequest) returns (GetBookingsByUserIdResponse);
 }
 
 message CreateBookingRequest {
-  string userClientId = 1;
-  string userProviderId = 2;
+  string clientId = 1;
+  string providerId = 2;
+  string startTime = 3;
+  string endTime = 4;
+  string amount = 5;
+  string currency = 6;
+  string paymentMethod = 7;
 }
 
 message GetBookingByIdRequest {
@@ -22,11 +28,24 @@ message UpdateBookingStatusRequest {
   string status = 2;
 }
 
+message GetBookingsByUserIdRequest {
+  string userId = 1;
+}
+
+message GetBookingsByUserIdResponse {
+  repeated Booking bookings = 1;
+}
+
 message Booking {
   string id = 1;
-  string userClientId = 2;
-  string userProviderId = 3;
-  string status = 4;
-  string createdAt = 5;
-  string updatedAt = 6;
+  string clientId = 2;
+  string providerId = 3;
+  string startTime = 4;
+  string endTime = 5;
+  string amount = 6;
+  string currency = 7;
+  string paymentMethod = 8;
+  string status = 9;
+  string createdAt = 10;
+  string updatedAt = 11;
 }

@@ -29,7 +29,7 @@ export class User {
   @Prop()
   bio?: string;
 
-  @Prop({ enum: ['MALE', 'FEMALE', 'OTHER'] })
+  @Prop({ enum: ['MALE', 'FEMALE', 'OTHER'], default: 'OTHER' })
   gender?: string;
 
   @Prop()

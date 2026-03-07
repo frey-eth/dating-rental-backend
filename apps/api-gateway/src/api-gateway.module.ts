@@ -4,6 +4,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { ConfigModule } from '@nestjs/config';
+import { JwtStrategy } from 'libs/common/jwt/jwt.strategy';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { ConfigModule } from '@nestjs/config';
     BookingsModule,
   ],
   controllers: [ApiGatewayController],
-  providers: [],
+  providers: [JwtStrategy],
 })
 export class ApiGatewayModule {}

@@ -27,11 +27,16 @@ export class UsersServiceService {
   }
 
   async getUserById(id: string): Promise<ProtoUser> {
-    const user = await this.userModel.findById(id).exec();
-    if (!user) {
+    try {
+      const user = await this.userModel.findById(id).exec();
+      if (!user) {
+        throw new RpcException({ code: 5, message: 'User not found' });
+      }
+      return toProtoUser(user);
+    } catch (e: unknown) {
+      if (e instanceof RpcException) throw e;
       throw new RpcException({ code: 5, message: 'User not found' });
     }
-    return toProtoUser(user);
   }
 
   async getUserByEmail(email: string): Promise<ProtoUser> {

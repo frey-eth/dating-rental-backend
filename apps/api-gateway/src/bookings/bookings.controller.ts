@@ -6,11 +6,16 @@ import {
   Get,
   Param,
   Put,
+  UseGuards,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { CreateBookingDto } from 'apps/api-gateway/src/bookings/dto/create-booking.dto';
 import { BookingsServiceClient } from 'libs/generated/bookings';
 import { UpdateBookingStatusDto } from './dto/update-booking-status.dto';
+import { AuthGuard } from 'libs/common/jwt/jwt-auth.guard';
+import { User } from 'libs/common/decorator/user.decorator';
+import { firstValueFrom } from 'rxjs';
 
 @Controller('bookings')
 export class BookingsController {
@@ -25,16 +30,45 @@ export class BookingsController {
   }
 
   @Post()
-  createBooking(@Body() createBookingDto: CreateBookingDto) {
-    return this.bookingsServiceClient.createBooking(createBookingDto);
+  @UseGuards(AuthGuard)
+  createBooking(
+    @Body() createBookingDto: CreateBookingDto,
+    @User('userId') userId: string,
+  ) {
+    return this.bookingsServiceClient.createBooking({
+      ...createBookingDto,
+      clientId: userId,
+      amount: createBookingDto.amount.toString(),
+      startTime: createBookingDto.startTime.toISOString(),
+      endTime: createBookingDto.endTime.toISOString(),
+    });
+  }
+
+  @Get('me')
+  @UseGuards(AuthGuard)
+  getBookingsByUserId(@User('userId') userId: string) {
+    return this.bookingsServiceClient.getBookingsByUserId({ userId });
   }
 
   @Get(':id')
-  getBookingById(@Param('id') id: string) {
-    return this.bookingsServiceClient.getBookingById({ id });
+  @UseGuards(AuthGuard)
+  async getBookingById(
+    @Param('id') id: string,
+    @User('userId') userId: string,
+  ) {
+    const booking = await firstValueFrom(
+      this.bookingsServiceClient.getBookingById({ id }),
+    );
+    if (booking.clientId !== userId && booking.providerId !== userId) {
+      throw new UnauthorizedException(
+        'You are not authorized to access this booking',
+      );
+    }
+    return booking;
   }
 
   @Put(':id/status')
+  @UseGuards(AuthGuard)
   updateBookingStatus(
     @Param('id') id: string,
     @Body() updateBookingStatusDto: UpdateBookingStatusDto,
